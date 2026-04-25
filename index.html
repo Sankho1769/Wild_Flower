@@ -704,6 +704,39 @@ tr:hover td{background:rgba(253,248,240,.5);}
 .pm-name{font-family:'Cormorant Garamond',serif;font-size:14px;font-weight:600;margin-bottom:2px;}
 .pm-price{font-size:13px;color:var(--gold);margin-bottom:7px;}
 
+/* ===== PRODUCT MODAL ===== */
+.pmod-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:800;display:none;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(6px);}
+.pmod-overlay.open{display:flex;}
+.pmod{background:var(--white);border-radius:20px;max-width:520px;width:100%;max-height:90vh;overflow-y:auto;animation:scaleIn .22s ease both;border:1px solid var(--cream3);}
+.pmod-hd{padding:18px 22px;border-bottom:1px solid var(--cream2);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--white);z-index:2;}
+.pmod-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;}
+.pmod-close{width:30px;height:30px;border-radius:50%;border:1px solid var(--cream3);background:var(--cream2);font-size:15px;display:flex;align-items:center;justify-content:center;}
+.pmod-body{padding:20px 22px;}
+.pmod-emoji-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:4px;}
+.emoji-opt{width:38px;height:38px;border-radius:10px;border:1.5px solid var(--cream3);background:var(--cream2);font-size:20px;display:flex;align-items:center;justify-content:center;transition:.15s;}
+.emoji-opt:hover{border-color:var(--gold);background:var(--gold3);}
+.emoji-opt.sel{border-color:var(--gold);background:var(--gold3);box-shadow:0 0 0 2px rgba(201,168,76,.25);}
+.pmod-tags-wrap{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;}
+.ptag-chip{padding:4px 11px;border-radius:20px;font-size:11px;border:1px solid var(--cream3);background:var(--cream2);color:var(--ink2);transition:.15s;}
+.ptag-chip.sel{background:var(--ink);color:var(--gold2);border-color:var(--ink);}
+.pmod-footer{padding:14px 22px;border-top:1px solid var(--cream2);display:flex;gap:10px;position:sticky;bottom:0;background:var(--white);}
+
+/* Product card admin actions */
+.pm-card{position:relative;}
+.pm-oos{position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(253,248,240,.82);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:var(--red);letter-spacing:.05em;text-transform:uppercase;border-radius:var(--rs);pointer-events:none;}
+.pm-actions{display:flex;gap:5px;flex-wrap:wrap;}
+.act-oos{background:rgba(201,168,76,.1);color:var(--gold);}
+.act-oos:hover{background:var(--gold);color:var(--white);}
+.act-oos.active{background:rgba(30,110,74,.1);color:var(--green);}
+.act-oos.active:hover{background:var(--green);color:var(--white);}
+.act-del{background:rgba(176,58,46,.08);color:var(--red);}
+.act-del:hover{background:var(--red);color:var(--white);}
+.add-prod-btn{display:flex;align-items:center;gap:8px;padding:10px 18px;border-radius:28px;background:linear-gradient(135deg,var(--gold),#8a6c1e);color:var(--white);border:none;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;transition:.2s;box-shadow:0 4px 14px rgba(201,168,76,.3);}
+.add-prod-btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(201,168,76,.4);}
+.pm-stat{font-size:10px;text-transform:uppercase;letter-spacing:.06em;padding:2px 7px;border-radius:10px;display:inline-block;margin-bottom:5px;}
+.pm-stat-live{background:rgba(30,110,74,.1);color:var(--green);}
+.pm-stat-oos{background:rgba(176,58,46,.08);color:var(--red);}
+
 /* ===== ORDER MODAL ===== */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:600;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(5px);}
 .modal-overlay.open{display:flex;}
@@ -855,6 +888,69 @@ tr:hover td{background:rgba(253,248,240,.5);}
   <div class="modal">
     <div class="modal-hd"><div class="modal-title" id="mod-title">Order</div><button class="modal-close" onclick="closeOModal()">✕</button></div>
     <div class="modal-body" id="mod-body"></div>
+  </div>
+</div>
+
+<!-- PRODUCT ADD/EDIT MODAL -->
+<div class="pmod-overlay" id="pmod-overlay">
+  <div class="pmod">
+    <div class="pmod-hd">
+      <div class="pmod-title" id="pmod-title">Add Product</div>
+      <button class="pmod-close" onclick="closePMod()">✕</button>
+    </div>
+    <div class="pmod-body">
+      <input type="hidden" id="pm-id">
+      <div class="fg"><label class="fl">Product Name</label><input class="fi" id="pm-name" placeholder="e.g. Floral Pearl Danglers"></div>
+      <div class="frow">
+        <div class="fg"><label class="fl">Price (₹)</label><input class="fi" id="pm-price" type="number" placeholder="299"></div>
+        <div class="fg"><label class="fl">Original Price (₹)</label><input class="fi" id="pm-orig" type="number" placeholder="599"></div>
+      </div>
+      <div class="fg">
+        <label class="fl">Category</label>
+        <select class="fi" id="pm-cat">
+          <option value="earrings">Earrings</option>
+          <option value="necklace">Necklace</option>
+          <option value="bracelet">Bracelet</option>
+          <option value="ring">Ring</option>
+        </select>
+      </div>
+      <div class="fg">
+        <label class="fl">Emoji / Icon</label>
+        <div class="pmod-emoji-row" id="pm-emoji-row">
+          💛🌟✨🌸🦋⭕🌙🔮💗📿👑🌿🦢💎🟡🧿💍💜🌺🎀💖🌼👸🏆🌹🎁
+        </div>
+      </div>
+      <div class="fg"><label class="fl">Description</label><textarea class="fi" id="pm-desc" rows="3" placeholder="Describe the jewellery piece…" style="resize:vertical;line-height:1.6"></textarea></div>
+      <div class="fg"><label class="fl">Shayari / Tagline</label><input class="fi" id="pm-shayari" placeholder='"Phoolon si nazaakat…" ✦'></div>
+      <div class="fg">
+        <label class="fl">Tags (select all that apply)</label>
+        <div class="pmod-tags-wrap" id="pm-tags-wrap">
+          <button type="button" class="ptag-chip" onclick="toggleTag(this)">Anti-Tarnish</button>
+          <button type="button" class="ptag-chip" onclick="toggleTag(this)">Pearl</button>
+          <button type="button" class="ptag-chip" onclick="toggleTag(this)">Gold</button>
+          <button type="button" class="ptag-chip" onclick="toggleTag(this)">Bestseller</button>
+          <button type="button" class="ptag-chip" onclick="toggleTag(this)">Traditional</button>
+          <button type="button" class="ptag-chip" onclick="toggleTag(this)">Boho</button>
+          <button type="button" class="ptag-chip" onclick="toggleTag(this)">Festival</button>
+          <button type="button" class="ptag-chip" onclick="toggleTag(this)">Bridal</button>
+          <button type="button" class="ptag-chip" onclick="toggleTag(this)">Minimal</button>
+          <button type="button" class="ptag-chip" onclick="toggleTag(this)">Statement</button>
+          <button type="button" class="ptag-chip" onclick="toggleTag(this)">Kundan</button>
+          <button type="button" class="ptag-chip" onclick="toggleTag(this)">Classic</button>
+          <button type="button" class="ptag-chip" onclick="toggleTag(this)">Adjustable</button>
+          <button type="button" class="ptag-chip" onclick="toggleTag(this)">Silver</button>
+          <button type="button" class="ptag-chip" onclick="toggleTag(this)">New Arrival</button>
+        </div>
+      </div>
+      <div class="fg">
+        <label class="fl">Features (one per line)</label>
+        <textarea class="fi" id="pm-feats" rows="3" placeholder="Anti-tarnish&#10;Lightweight&#10;Gift-box" style="resize:vertical;line-height:1.7"></textarea>
+      </div>
+    </div>
+    <div class="pmod-footer">
+      <button class="btn-gold" style="flex:1" onclick="saveProd()">Save Product 🌸</button>
+      <button class="btn-outline" style="padding:10px 18px" onclick="closePMod()">Cancel</button>
+    </div>
   </div>
 </div>
 
@@ -1247,7 +1343,7 @@ const SEARCH_SUGGESTIONS = ['Jhumka earrings','Pearl necklace','Gold bangles','C
 window.addEventListener('load', function() {
   updateBadge();
   renderProfBtn();
-  renderProds(PRODS);
+  renderProds(getLiveProds());
   if (user && user.isAdmin) { showPage('page-admin'); aRender('dashboard'); }
   initCursor();
   initShowcase();
@@ -1300,7 +1396,7 @@ function doSearch(q, ddId) {
     }).join('');
   } else {
     var ql = q.toLowerCase();
-    var found = PRODS.filter(function(p) {
+    var found = getLiveProds().filter(function(p) {
       return p.name.toLowerCase().includes(ql) || p.cat.includes(ql) || p.tags.some(function(t){return t.toLowerCase().includes(ql);});
     }).slice(0,6);
     if (!found.length) {
@@ -1318,7 +1414,7 @@ function closeDrop(id) { var el = document.getElementById(id); if (el) el.classL
 function doSearchTerm(term, ddId) {
   closeDrop(ddId);
   var ql = term.toLowerCase();
-  var found = PRODS.filter(function(p){return p.name.toLowerCase().includes(ql)||p.cat.includes(ql)||p.tags.some(function(t){return t.toLowerCase().includes(ql);});});
+  var found = getLiveProds().filter(function(p){return p.name.toLowerCase().includes(ql)||p.cat.includes(ql)||p.tags.some(function(t){return t.toLowerCase().includes(ql);});});
   renderProds(found.length ? found : PRODS);
   if (document.getElementById('desk-search')) document.getElementById('desk-search').value = '';
   if (document.getElementById('mob-search')) document.getElementById('mob-search').value = '';
@@ -1380,7 +1476,7 @@ function doLogin() {
     user = {email:e, name:e.split('@')[0], isAdmin:false};
     localStorage.setItem('wf_user', JSON.stringify(user));
     err.style.display='none'; closeAuth(); renderProfBtn();
-    toast('Welcome back 🌸'); showPage('page-home'); renderProds(PRODS);
+    toast('Welcome back 🌸'); showPage('page-home'); renderProds(getLiveProds());
   } else { err.style.display='block'; }
 }
 function doSignup() {
@@ -1388,11 +1484,11 @@ function doSignup() {
   if (!n||!e||p.length<4) { toast('Please fill all fields'); return; }
   user = {email:e, name:n, isAdmin:false};
   localStorage.setItem('wf_user', JSON.stringify(user));
-  closeAuth(); renderProfBtn(); toast('Welcome, '+n+' 🌸'); showPage('page-home'); renderProds(PRODS);
+  closeAuth(); renderProfBtn(); toast('Welcome, '+n+' 🌸'); showPage('page-home'); renderProds(getLiveProds());
 }
 function doLogout() {
   user=null; localStorage.removeItem('wf_user'); closeProfDrop(); renderProfBtn();
-  toast('Signed out 🌸'); showPage('page-home'); renderProds(PRODS);
+  toast('Signed out 🌸'); showPage('page-home'); renderProds(getLiveProds());
 }
 
 function renderProds(arr) {
@@ -1413,13 +1509,14 @@ function renderProds(arr) {
 function filterP(cat, el) {
   document.querySelectorAll('.fchip,.filter-btn').forEach(function(c){c.classList.remove('on');});
   if (el) el.classList.add('on');
-  renderProds(cat==='all'?PRODS:PRODS.filter(function(p){return p.cat===cat;}));
+  var src = getLiveProds();
+  renderProds(cat==='all'?src:src.filter(function(p){return p.cat===cat;}));
   setTimeout(scrollToShop, 50);
 }
 function qAdd(id) { var p=PRODS.find(function(x){return x.id===id;}); if(p){addToCart(p);spawnPetals();} }
 
 function openDetail(id) {
-  var p = PRODS.find(function(x){return x.id===id;}); if (!p) return; curProd=p;
+  var p = getProds().find(function(x){return x.id===id;}); if (!p) return; curProd=p;
   document.getElementById('det-nav-name').textContent = p.name;
   document.getElementById('det-emoji').textContent = p.emoji;
   document.getElementById('det-tags').innerHTML = p.tags.map(function(t){return '<div class="det-tag">'+t+'</div>';}).join('');
@@ -1528,7 +1625,12 @@ function aRender(tab) {
   }else if(tab==='orders'){
     body.innerHTML='<div class="tcard"><div class="tcard-head"><div class="tcard-title">All Orders ('+ORDERS.length+')</div><input class="search-sm" placeholder="Search…" oninput="aSearch(this.value)"></div><div id="a-orders-tbl">'+aOrderTable(ORDERS.slice().reverse())+'</div></div>';
   }else if(tab==='products'){
-    body.innerHTML='<div class="pmgmt-grid">'+PRODS.map(function(p){return '<div class="pm-card"><div class="pm-img">'+p.emoji+'</div><div class="pm-body"><div class="pm-name">'+p.name+'</div><div class="pm-price">₹'+p.price+'</div><div style="font-size:10px;color:var(--ink3);margin-bottom:6px">'+p.cat+'</div><div style="display:flex;gap:5px"><span class="act-btn act-view">Edit</span><span class="act-btn" style="background:rgba(176,58,46,.1);color:var(--red)">Delete</span></div></div></div>';}).join('')+'</div>';
+    var liveCount=getProds().filter(function(p){return !p.outOfStock;}).length;
+    var oosCount=getProds().filter(function(p){return p.outOfStock;}).length;
+    body.innerHTML='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px;">'
+      +'<div><div style="font-family:Cormorant Garamond,serif;font-size:22px;font-weight:400">Products <span style="font-size:14px;color:var(--ink3);font-family:DM Sans,sans-serif">('+getProds().length+' total · '+liveCount+' live · '+oosCount+' OOS)</span></div></div>'
+      +'<button class="add-prod-btn" onclick="openPMod(null)">＋ Add Product</button></div>'
+      +'<div class="pmgmt-grid" id="pmgmt-grid">'+renderPMGrid()+'</div>';
   }else{
     var custs=[...new Set(ORDERS.map(function(o){return o.customer;}))];
     body.innerHTML='<div class="tcard"><div class="tcard-head"><div class="tcard-title">Customers ('+custs.length+')</div></div><table><thead><tr><th>Name</th><th>Orders</th><th>Spent</th><th>Phone</th></tr></thead><tbody>'+custs.map(function(c){var co=ORDERS.filter(function(o){return o.customer===c;});return '<tr><td><strong>'+c+'</strong></td><td>'+co.length+'</td><td style="color:var(--gold);font-weight:500">₹'+co.reduce(function(s,o){return s+o.total;},0)+'</td><td>'+( co[0]?co[0].phone:'—')+'</td></tr>';}).join('')+'</tbody></table></div>';
@@ -1552,6 +1654,159 @@ function closeOModal() { document.getElementById('omodal').classList.remove('ope
 function updStatus(id,status) { var idx=ORDERS.findIndex(function(o){return o.id===id;}); if(idx>=0){ORDERS[idx].status=status;localStorage.setItem('wf_orders',JSON.stringify(ORDERS));toast('Updated '+({pending:'⏳',confirmed:'✅',shipped:'🚚',delivered:'📦',cancelled:'❌'}[status]||''));aRender('orders');} }
 function confirmOrd(id) { updStatus(id,'confirmed'); closeOModal(); }
 document.getElementById('omodal').addEventListener('click', function(e){if(e.target===this)closeOModal();});
+
+/* ===== PRODUCT MANAGEMENT ===== */
+// PRODS is the seed list; customProds in localStorage layer on top
+function getProds() {
+  var custom = JSON.parse(localStorage.getItem('wf_prods_custom') || 'null');
+  if (custom) return custom;
+  return PRODS.map(function(p){ return Object.assign({}, p); });
+}
+function saveProds(arr) {
+  localStorage.setItem('wf_prods_custom', JSON.stringify(arr));
+  // sync the global used by storefront
+  window._liveProds = arr;
+}
+function getLiveProds() {
+  return getProds().filter(function(p){ return !p.outOfStock; });
+}
+
+var PM_EMOJIS = ['💛','🌟','✨','🌸','🦋','⭕','🌙','🔮','💗','📿','👑','🌿','🦢','💎','🟡','🧿','💍','💜','🌺','🎀','💖','🌼','👸','🏆','🌹','🎁'];
+var _pmSelEmoji = '💛';
+
+function renderPMGrid() {
+  var prods = getProds();
+  if (!prods.length) return '<div style="grid-column:1/-1;text-align:center;padding:48px;color:var(--ink3);font-family:Cormorant Garamond,serif;font-size:18px">No products yet. Add one! 🌸</div>';
+  return prods.map(function(p) {
+    var disc = p.orig ? Math.round((1-p.price/p.orig)*100) : 0;
+    var oosClass = p.outOfStock ? ' pm-oos-card' : '';
+    return '<div class="pm-card'+oosClass+'" style="background:var(--white);border:1px solid var(--cream3);border-radius:var(--rs);overflow:hidden;position:relative;">'
+      + (p.outOfStock ? '<div class="pm-oos">Out of Stock</div>' : '')
+      + '<div class="pm-img" style="height:100px;background:var(--cream2);display:flex;align-items:center;justify-content:center;font-size:40px;">'+p.emoji+'</div>'
+      + '<div class="pm-body">'
+      + '<div class="pm-stat '+(p.outOfStock?'pm-stat-oos':'pm-stat-live')+'">'+(p.outOfStock?'Out of Stock':'Live')+'</div>'
+      + '<div class="pm-name">'+p.name+'</div>'
+      + '<div class="pm-price">₹'+p.price+' <span style="font-size:10px;color:var(--green)">'+disc+'% off</span></div>'
+      + '<div style="font-size:10px;color:var(--ink3);text-transform:capitalize;margin-bottom:8px">'+p.cat+'</div>'
+      + '<div class="pm-actions">'
+      + '<button class="act-btn act-view" onclick="openPMod('+p.id+')">✏️ Edit</button>'
+      + '<button class="act-btn act-oos'+(p.outOfStock?' active':'')+'" onclick="toggleOOS('+p.id+')">'+(p.outOfStock?'✅ Back In':'🚫 Mark OOS')+'</button>'
+      + '<button class="act-btn act-del" onclick="deleteProd('+p.id+')">🗑 Delete</button>'
+      + '</div></div></div>';
+  }).join('');
+}
+
+function openPMod(id) {
+  document.getElementById('pmod-overlay').classList.add('open');
+  // build emoji picker
+  var row = document.getElementById('pm-emoji-row');
+  row.innerHTML = PM_EMOJIS.map(function(e){ return '<button type="button" class="emoji-opt" onclick="selectEmoji(this,\''+e+'\')" title="'+e+'">'+e+'</button>'; }).join('');
+
+  if (id === null) {
+    // ADD mode
+    document.getElementById('pmod-title').textContent = 'Add New Product';
+    document.getElementById('pm-id').value = '';
+    document.getElementById('pm-name').value = '';
+    document.getElementById('pm-price').value = '';
+    document.getElementById('pm-orig').value = '';
+    document.getElementById('pm-cat').value = 'earrings';
+    document.getElementById('pm-desc').value = '';
+    document.getElementById('pm-shayari').value = '';
+    document.getElementById('pm-feats').value = '';
+    _pmSelEmoji = '💛';
+    document.querySelectorAll('.emoji-opt').forEach(function(b){ b.classList.toggle('sel', b.textContent==='💛'); });
+    document.querySelectorAll('.ptag-chip').forEach(function(c){ c.classList.remove('sel'); });
+  } else {
+    // EDIT mode
+    var prods = getProds();
+    var p = prods.find(function(x){ return x.id===id; });
+    if (!p) return;
+    document.getElementById('pmod-title').textContent = 'Edit Product';
+    document.getElementById('pm-id').value = id;
+    document.getElementById('pm-name').value = p.name;
+    document.getElementById('pm-price').value = p.price;
+    document.getElementById('pm-orig').value = p.orig || '';
+    document.getElementById('pm-cat').value = p.cat;
+    document.getElementById('pm-desc').value = p.desc || '';
+    document.getElementById('pm-shayari').value = p.shayari || '';
+    document.getElementById('pm-feats').value = (p.feats||[]).join('\n');
+    _pmSelEmoji = p.emoji || '💛';
+    document.querySelectorAll('.emoji-opt').forEach(function(b){ b.classList.toggle('sel', b.textContent===_pmSelEmoji); });
+    document.querySelectorAll('.ptag-chip').forEach(function(c){ c.classList.toggle('sel', (p.tags||[]).indexOf(c.textContent)>-1); });
+  }
+}
+
+function selectEmoji(btn, em) {
+  _pmSelEmoji = em;
+  document.querySelectorAll('.emoji-opt').forEach(function(b){ b.classList.remove('sel'); });
+  btn.classList.add('sel');
+}
+function toggleTag(btn) { btn.classList.toggle('sel'); }
+
+function saveProd() {
+  var name = document.getElementById('pm-name').value.trim();
+  var price = parseInt(document.getElementById('pm-price').value);
+  var orig = parseInt(document.getElementById('pm-orig').value) || price;
+  var cat = document.getElementById('pm-cat').value;
+  var desc = document.getElementById('pm-desc').value.trim();
+  var shayari = document.getElementById('pm-shayari').value.trim();
+  var feats = document.getElementById('pm-feats').value.split('\n').map(function(f){return f.trim();}).filter(Boolean);
+  var tags = [];
+  document.querySelectorAll('.ptag-chip.sel').forEach(function(c){ tags.push(c.textContent); });
+
+  if (!name || !price) { toast('Name and price are required ✦'); return; }
+
+  var prods = getProds();
+  var editId = document.getElementById('pm-id').value;
+
+  if (editId) {
+    // Update existing
+    var idx = prods.findIndex(function(p){ return p.id==editId; });
+    if (idx >= 0) {
+      prods[idx] = Object.assign(prods[idx], {name:name, price:price, orig:orig, cat:cat, desc:desc, shayari:shayari, feats:feats, tags:tags, emoji:_pmSelEmoji, rating:prods[idx].rating||4.5, revs:prods[idx].revs||[]});
+    }
+    toast('Product updated ✅');
+  } else {
+    // Add new
+    var newId = Date.now();
+    prods.push({id:newId, name:name, price:price, orig:orig, cat:cat, desc:desc, shayari:shayari, feats:feats, tags:tags, emoji:_pmSelEmoji, rating:4.5, revs:[], outOfStock:false});
+    toast('Product added 🌸'); spawnPetals(5);
+  }
+
+  saveProds(prods);
+  closePMod();
+  aRender('products');
+  // Refresh storefront grid if visible
+  renderProds(getLiveProds());
+}
+
+function toggleOOS(id) {
+  var prods = getProds();
+  var p = prods.find(function(x){ return x.id===id; });
+  if (!p) return;
+  p.outOfStock = !p.outOfStock;
+  saveProds(prods);
+  toast(p.outOfStock ? '🚫 Marked out of stock' : '✅ Back in stock');
+  aRender('products');
+  renderProds(getLiveProds());
+}
+
+function deleteProd(id) {
+  var prods = getProds();
+  var p = prods.find(function(x){ return x.id===id; });
+  if (!p) return;
+  if (!confirm('Delete "'+p.name+'"? This cannot be undone.')) return;
+  prods = prods.filter(function(x){ return x.id!==id; });
+  saveProds(prods);
+  toast('Deleted 🗑');
+  aRender('products');
+  renderProds(getLiveProds());
+}
+
+function closePMod() {
+  document.getElementById('pmod-overlay').classList.remove('open');
+}
+document.getElementById('pmod-overlay').addEventListener('click', function(e){ if(e.target===this) closePMod(); });
 
 function toast(msg) { var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(function(){t.classList.remove('show');},2400); }
 function spawnPetals(n) {
@@ -1745,6 +2000,114 @@ function initShowcase() {
   var gR2=new THREE.Mesh(new THREE.TorusGeometry(3.8,.038,8,64),new THREE.MeshBasicMaterial({color:0x8833ff,transparent:true,opacity:.14}));
   gR2.rotation.x=Math.PI*.5; gR2.position.y=-3.05; scene.add(gR2);
 
+  /* ===== MG FLOOR INLAY — LARGE ROTATING ===== */
+  var FY = -3.02;
+  var mgGroup = new THREE.Group();
+  mgGroup.position.set(0, FY, 0);
+  mgGroup.rotation.x = -Math.PI / 2; // lay the XY-built letters flat on the floor
+  scene.add(mgGroup);
+
+  var goldMat  = new THREE.MeshStandardMaterial({color:0xd4a843,metalness:.92,roughness:.06,emissive:0xc9a84c,emissiveIntensity:.55});
+  var goldMat2 = new THREE.MeshStandardMaterial({color:0xe8c97a,metalness:.95,roughness:.04,emissive:0xe0b84c,emissiveIntensity:.75});
+  var plateMat = new THREE.MeshStandardMaterial({color:0x0a0704,metalness:.75,roughness:.28,emissive:0x1a1204,emissiveIntensity:.12});
+
+  var SD = 0.14;   // extrusion depth — thick raised slab
+  var SW = 0.28;   // stroke width — bold strokes
+
+  /* ── helpers (build in XY, then group rotates to XZ) ── */
+  function bar(x,y,w,h,mat){
+    var m=new THREE.Mesh(new THREE.BoxGeometry(w,h,SD),mat||goldMat);
+    m.position.set(x,y,SD/2); mgGroup.add(m); return m;
+  }
+  function diag(x1,y1,x2,y2,mat){
+    var dx=x2-x1,dy=y2-y1,len=Math.sqrt(dx*dx+dy*dy);
+    var m=new THREE.Mesh(new THREE.BoxGeometry(len,SW,SD),mat||goldMat);
+    m.position.set((x1+x2)/2,(y1+y2)/2,SD/2);
+    m.rotation.z=Math.atan2(dy,dx); mgGroup.add(m); return m;
+  }
+  function arc(cx,cy,r,a0,a1,segs,w,mat){
+    for(var i=0;i<segs;i++){
+      var t0=a0+(a1-a0)*i/segs, t1=a0+(a1-a0)*(i+1)/segs;
+      var ax=(Math.cos(t0)+Math.cos(t1))/2*r+cx;
+      var ay=(Math.sin(t0)+Math.sin(t1))/2*r+cy;
+      var segLen=r*2*Math.sin(Math.abs(t1-t0)/2);
+      var ang=Math.atan2(Math.sin(t1)-Math.sin(t0),Math.cos(t0)-Math.cos(t1))+Math.PI/2;
+      var m=new THREE.Mesh(new THREE.BoxGeometry(segLen+0.05,w,SD),mat||goldMat);
+      m.position.set(ax,ay,SD/2); m.rotation.z=ang; mgGroup.add(m);
+    }
+  }
+  function dot(x,y,r,mat){
+    var m=new THREE.Mesh(new THREE.CylinderGeometry(r,r,SD*2,20),mat||goldMat2);
+    m.rotation.x=Math.PI/2; m.position.set(x,y,SD*0.8); mgGroup.add(m); return m;
+  }
+
+  /* ── base plate ── */
+  var plate=new THREE.Mesh(new THREE.CircleGeometry(5.6,100),plateMat);
+  plate.position.z=-0.02; mgGroup.add(plate);
+
+  /* ── outer decorative rings ── */
+  var ringA=new THREE.Mesh(new THREE.TorusGeometry(5.3,.08,8,140),goldMat);  mgGroup.add(ringA);
+  var ringB=new THREE.Mesh(new THREE.TorusGeometry(4.75,.04,8,140),goldMat2); mgGroup.add(ringB);
+  var ringC=new THREE.Mesh(new THREE.TorusGeometry(4.2,.03,8,140),new THREE.MeshStandardMaterial({color:0xd4a843,metalness:.9,roughness:.1,emissive:0xd4a843,emissiveIntensity:.3})); mgGroup.add(ringC);
+
+  /* ── 12 diamond accent markers around outer ring ── */
+  for(var di=0;di<12;di++){
+    var da=di/12*Math.PI*2;
+    var dm=new THREE.Mesh(new THREE.OctahedronGeometry(.16,0),goldMat2);
+    dm.position.set(Math.cos(da)*5.05, Math.sin(da)*5.05, SD);
+    dm.rotation.z=da; mgGroup.add(dm);
+  }
+
+  /* ══════════════════════════════════
+     LETTER  M   (left half)
+     Scale: large — X -3.5 → -0.5, Y -1.55 → 1.55
+  ══════════════════════════════════ */
+  var mx0=-3.4, mx1=-0.55, mH=3.1, mHalf=mH/2;
+  var mMidX=(mx0+mx1)/2;
+
+  // Left vertical leg
+  bar(mx0, 0, SW, mH);
+  // Right vertical leg
+  bar(mx1, 0, SW, mH);
+  // Left diagonal: top-left → V-notch centre
+  diag(mx0, mHalf, mMidX, -0.22);
+  // Right diagonal: top-right → V-notch centre
+  diag(mx1, mHalf, mMidX, -0.22);
+
+  // Top serif caps
+  bar(mx0, mHalf,  SW*2.0, SW);
+  bar(mx1, mHalf,  SW*2.0, SW);
+  // Bottom serif caps
+  bar(mx0, -mHalf, SW*2.0, SW);
+  bar(mx1, -mHalf, SW*2.0, SW);
+
+  /* ══════════════════════════════════
+     LETTER  G   (right half)
+     Scale: X 0.45 → 3.5, centred at x=1.95
+  ══════════════════════════════════ */
+  var gcx=1.95, gcy=0, gRad=1.52;
+
+  // Main circular arc — ~290° (gap at right for the arm)
+  arc(gcx, gcy, gRad, Math.PI*0.28, Math.PI*2.28, 60, SW);
+
+  // Horizontal arm (pointing left into centre)
+  bar(gcx+0.30, 0, 1.30, SW);
+
+  // Vertical inner-serif stub at arm end
+  bar(gcx+0.30+1.30/2-SW/2, -0.36, SW, 0.76);
+
+  // Top & bottom serif bars on arc opening
+  bar(gcx+Math.cos(Math.PI*0.28)*gRad, gcy+Math.sin(Math.PI*0.28)*gRad, SW*1.8, SW);
+  bar(gcx+Math.cos(Math.PI*2.28)*gRad, gcy+Math.sin(Math.PI*2.28)*gRad, SW*1.8, SW);
+
+  /* ── centre divider hairline between M and G ── */
+  bar(-0.07, 0, 0.06, mH*0.7, new THREE.MeshStandardMaterial({color:0xd4a843,metalness:.9,roughness:.1,emissive:0xd4a843,emissiveIntensity:.4}));
+
+  /* ── accent dots ── */
+  [mx0,mx1].forEach(function(px){[-mHalf,mHalf].forEach(function(py){ dot(px,py,.18); });});
+  dot(gcx+0.30+1.30/2-SW/2, -0.36, .15);
+  dot(mMidX, -0.22, .15, goldMat2);
+
   var POS=[-4.6,0,4.6], YPOS=[2.1,2.6,2.1];
   var MAKERS=[makeEarrings,makePlant,makeNecklace];
   var ALL_LABELS=[EL,PL,NL];
@@ -1767,17 +2130,60 @@ function initShowcase() {
     },320);
   }
 
-  var drag=false,lx=0,ly=0,vx=0,camT=0,camP=.17,camR=13;
-  function updateCam(){camera.position.set(Math.sin(camT)*camR*Math.cos(camP),Math.sin(camP)*camR+.8,Math.cos(camT)*camR*Math.cos(camP));camera.lookAt(0,.5,0);}
+  /* ===== UPGRADED 360° ORBIT CONTROLS ===== */
+  var drag=false,lx=0,ly=0,vx=0,vy=0,camT=0,camP=.17,camR=13;
+
+  function updateCam(){
+    var cosP=Math.cos(camP), sinP=Math.sin(camP);
+    camera.position.set(
+      Math.sin(camT)*camR*cosP,
+      sinP*camR+.8,
+      Math.cos(camT)*camR*cosP
+    );
+    camera.lookAt(0,.5,0);
+  }
   updateCam();
-  canvas.addEventListener('mousedown',function(e){drag=true;lx=e.clientX;ly=e.clientY;vx=0;});
-  window.addEventListener('mouseup',function(){drag=false;});
-  window.addEventListener('mousemove',function(e){if(!drag)return;var dx=e.clientX-lx,dy=e.clientY-ly;vx=dx*.016;camT-=dx*.007;camP=Math.max(-.18,Math.min(.52,camP-dy*.005));lx=e.clientX;ly=e.clientY;updateCam();});
-  canvas.addEventListener('touchstart',function(e){drag=true;lx=e.touches[0].clientX;ly=e.touches[0].clientY;vx=0;},{passive:true});
-  canvas.addEventListener('touchend',function(){drag=false;},{passive:true});
-  canvas.addEventListener('touchmove',function(e){if(!drag)return;camT-=(e.touches[0].clientX-lx)*.007;camP=Math.max(-.18,Math.min(.52,camP-(e.touches[0].clientY-ly)*.005));lx=e.touches[0].clientX;ly=e.touches[0].clientY;updateCam();},{passive:true});
-  canvas.addEventListener('wheel',function(e){camR=Math.max(6,Math.min(20,camR+(e.deltaY>0?.55:-.55)));updateCam();e.preventDefault();},{passive:false});
-  window.addEventListener('resize',function(){var W2=window.innerWidth,H2=window.innerHeight;renderer.setSize(W2,H2);camera.aspect=W2/H2;camera.updateProjectionMatrix();});
+
+  /* Mouse */
+  canvas.addEventListener('mousedown',function(e){
+    drag=true; lx=e.clientX; ly=e.clientY; vx=0; vy=0;
+  });
+  window.addEventListener('mouseup',function(){ drag=false; });
+  window.addEventListener('mousemove',function(e){
+    if(!drag) return;
+    var dx=e.clientX-lx, dy=e.clientY-ly;
+    vx=dx*.016; vy=dy*.01;
+    camT-=dx*.007;
+    camP=Math.max(-Math.PI*.48, Math.min(Math.PI*.48, camP-dy*.005));
+    lx=e.clientX; ly=e.clientY;
+    updateCam();
+  });
+
+  /* Touch */
+  canvas.addEventListener('touchstart',function(e){
+    drag=true; lx=e.touches[0].clientX; ly=e.touches[0].clientY; vx=0; vy=0;
+  },{passive:true});
+  canvas.addEventListener('touchend',function(){ drag=false; },{passive:true});
+  canvas.addEventListener('touchmove',function(e){
+    if(!drag) return;
+    var dx=e.touches[0].clientX-lx, dy=e.touches[0].clientY-ly;
+    vx=dx*.016; vy=dy*.01;
+    camT-=dx*.007;
+    camP=Math.max(-Math.PI*.48, Math.min(Math.PI*.48, camP-dy*.005));
+    lx=e.touches[0].clientX; ly=e.touches[0].clientY;
+    updateCam();
+  },{passive:true});
+
+  /* Scroll zoom — wider range */
+  canvas.addEventListener('wheel',function(e){
+    camR=Math.max(4,Math.min(22,camR+(e.deltaY>0?.55:-.55)));
+    updateCam(); e.preventDefault();
+  },{passive:false});
+
+  window.addEventListener('resize',function(){
+    var W2=window.innerWidth, H2=window.innerHeight;
+    renderer.setSize(W2,H2); camera.aspect=W2/H2; camera.updateProjectionMatrix();
+  });
 
   var heroEl=document.getElementById('hero-overlay');
   var heroHidden=false;
@@ -1789,10 +2195,34 @@ function initShowcase() {
   (function loop(){
     requestAnimationFrame(loop); fr++;
     var t=fr*.016;
-    if(!drag){if(Math.abs(vx)>.001){camT-=vx;vx*=.88;}else camT+=.0006;updateCam();}
+
+    /* Camera momentum — both axes coast after release */
+    if(!drag){
+      if(Math.abs(vx)>.001||Math.abs(vy)>.001){
+        camT-=vx; vx*=.88;
+        camP=Math.max(-Math.PI*.48, Math.min(Math.PI*.48, camP-vy));
+        vy*=.88;
+      } else {
+        camT+=.0006; /* gentle auto-rotate when idle */
+      }
+      updateCam();
+    }
+
     items.forEach(function(it,i){it.g.rotation.y+=SPEEDS[i];it.g.position.y=YPOS[i]+Math.sin(t*.8+i*2.1)*.13;acc[i]+=SPEEDS[i];if(acc[i]>=Math.PI*2){acc[i]=0;swapItem(i);}});
+    /* MG plate slow rotation + pulsing emissive glow */
+    mgGroup.rotation.z += 0.0025;
+    var mgGlow = 0.45 + Math.sin(t * 0.9) * 0.22;
+    goldMat.emissiveIntensity  = mgGlow;
+    goldMat2.emissiveIntensity = mgGlow + 0.2;
     ORings.forEach(function(r,i){r.rotation.z+=(.005+i*.002)*(i%2?1:-1);r.rotation.y+=.0018;});
     OGems.forEach(function(g2,i){var ph3=g2.ph+t*g2.sp;g2.mesh.position.set(Math.cos(ph3)*g2.R,g2.Y+Math.sin(t*.015+i)*.3,Math.sin(ph3)*Math.cos(g2.tilt)*g2.R);g2.mesh.rotation.x+=.02;g2.mesh.rotation.y+=.03;});
+
+    mgGroup.rotation.z += 0.0025;
+    var pulse = 0.45 + Math.sin(t * 1.4) * 0.25;
+    goldMat.emissiveIntensity  = pulse;
+    goldMat2.emissiveIntensity = pulse + 0.2;
+    ringA.material.emissiveIntensity = 0.3 + Math.sin(t*0.9+1)*0.2;
+    ringB.material.emissiveIntensity = 0.5 + Math.cos(t*1.1)*0.25;
     lights[0].intensity=7+Math.sin(t*1.05)*2.8;
     lights[1].intensity=3.8+Math.sin(t*.62+1)*2;
     lights[2].intensity=3.8+Math.cos(t*.88+2)*2;
